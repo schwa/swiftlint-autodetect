@@ -10,7 +10,7 @@ import typer
 
 app = typer.Typer()
 
-@app.callback()
+@app.command()
 def swiftlint_autodetect(path: str):
     swiftlint = which("swiftlint")
 
@@ -29,12 +29,6 @@ def swiftlint_autodetect(path: str):
         values = [field.strip() for field in row.split("|")][1:-1]
         rule = dict(zip(keys, values))
         rules.append(rule)
-        # if rule["analyzer"] == "yes":
-        #     analyzer_rules.append(rule)
-        # else:
-        #     lint_rules.append(rule)
-
-    # {'identifier': 'anonymous_argument_in_multiline_closure', 'opt-in': 'yes', 'correctable': 'no', 'enabled in your config': 'no', 'kind': 'idiomatic', 'analyzer': 'no', 'configuration': 'warning'}
 
     config = {
         "only_rules": [
@@ -51,6 +45,7 @@ def swiftlint_autodetect(path: str):
     failing_rules = set()
 
     styles = ["lint"]
+    # TODO: analyze currently broken
     # styles = ["lint", "analyze"]
 
     path = Path(path).expanduser()

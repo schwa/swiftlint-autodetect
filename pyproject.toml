@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "swiftlint-detect"
+name = "swiftlint-autodetect"
 version = "0.1.0"
-description = ""
+description = "TODO"
 authors = ["Jonathan Wight <jwight@mac.com>"]
 
 [tool.poetry.dependencies]
