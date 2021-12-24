@@ -6,7 +6,10 @@ Python script to autodetect a base set of swiftlint rules.
 
 ```sh
 brew install pipx
-pipx install https://github.com/schwa/swiftlint-autodetect.git
+pipx install git+https://github.com/schwa/swiftlint-autodetect.git
+
+# to uninstall later
+pipx uninstall swiftlint-autodetect
 ```
 
 ## Usage
