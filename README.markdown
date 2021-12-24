@@ -62,8 +62,19 @@ trailing_comma (*): 106
 todo: 106
 ```
 
+## Getting minimum values for count based rules
 
+You can also use swiftlint-autodetect to compute the minimum count of a count based rule like: line_length, file_length,
+cyclomatic_complexity.
 
+```sh
+$ swiftlint-autodetect minimize ~/Projects/Demos function_body_length
+function_body_length:
+  error: 79
+  warning: 79
+only_rules:
+- function_body_length
+```
 ## How this works
 
 swiftlint-autodetect queries swiftlint for the full list of rules and creates a temporary swiftlint config file enabling all these rules. It then performs a lint operation on the source code at the path specified and finds out which rules would are violated. It then outputs a configuration disabling the violated rules.

@@ -1,27 +1,26 @@
-import subprocess
+from collections import Counter
+from io import StringIO
 from pathlib import Path
 from shutil import which
-import shlex
+from typer import echo, style
 from typing import Dict
-import yaml
 import re
-import sys
+import shlex
+import subprocess
 import typer
-from collections import Counter
-from typer import echo
-from typer import style
+import yaml
+from io import StringIO
 
 app = typer.Typer()
 
-class SwiftLint:
 
+class SwiftLint:
     def __init__(self):
-        #self._rules = {}
         pass
 
     @property
     def rules(self):
-        if hasattr(self, '_rules'):
+        if hasattr(self, "_rules"):
             return self._rules
         else:
             swiftlint = which("swiftlint")
@@ -39,7 +38,7 @@ class SwiftLint:
             for row in rows:
                 values = [field.strip() for field in row.split("|")][1:-1]
                 rule = dict(zip(keys, values))
-                self._rules[rule['identifier']] = rule
+                self._rules[rule["identifier"]] = rule
             return self._rules
 
     def generateCompleteConfig(self):
@@ -71,12 +70,10 @@ class SwiftLint:
             output = subprocess.run(args, capture_output=True, text=True, cwd="/tmp")
             if output.stderr:
                 echo(output.stderr, err=True)
-                exit(-1) # TODO: use typer errors
+                exit(-1)  # TODO: use typer errors
 
             # TODO: only performs first style
             return output.stdout
-
-
 
 
 @app.command()
@@ -95,12 +92,45 @@ def count(path: str):
         rule = match.groupdict()["rule"]
         rules[rule] += 1
 
-    for key, value in reversed(sorted(rules.items(), key=lambda kv:kv[1])):
+    for key, value in reversed(sorted(rules.items(), key=lambda kv: kv[1])):
         rule = swiftlint.rules[key]
-        correctable = style(" (*)", fg=typer.colors.GREEN) if rule["correctable"] == "yes" else ""
+        correctable = (
+            style(" (*)", fg=typer.colors.GREEN) if rule["correctable"] == "yes" else ""
+        )
         echo(f"{key}{correctable}: {value}")
 
 
+@app.command()
+def minimize(path: str, rule: str):
+    swiftlint = SwiftLint()
+
+    max_count = 0
+
+    config = {"only_rules": [rule], rule: {"warning": max_count, "error": 1000000}}
+    yaml.safe_dump(config, open("/tmp/swiftlint.yml", "w"))
+
+    output = swiftlint.lint(path)
+
+    pattern = re.compile(
+        r"^.+:\d+:\d+: (?:warning|error): .+?0.+?(?P<count>\d+).*? \((?P<rule>.+)\)$"
+    )
+    counts = []
+    for line in output.splitlines():
+        match = pattern.match(line)
+        if match:
+            assert match["rule"] == rule
+            counts.append(int(match["count"]))
+        else:
+            echo("Filed to parse", err=True)
+            echo(line, err=True)
+            exit(-1)
+
+    config[rule]["warning"] = max(counts)
+    config[rule]["error"] = max(counts)
+
+    s = StringIO()
+    yaml.safe_dump(config, s)
+    echo(s.getvalue())
 
 
 @app.command()
