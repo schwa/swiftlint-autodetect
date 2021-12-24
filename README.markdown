@@ -12,7 +12,7 @@ pipx install https://github.com/schwa/swiftlint-autodetect.git
 ## Usage
 
 ```sh
-swiftlint-autodetect ~/Projects/MyProject
+$ swiftlint-autodetect generate ~/Projects/MyProject
 ```
 
 And this outputs:
@@ -30,6 +30,36 @@ only_rules:
 
 # and so on
 ```
+
+## Counting Violations
+
+To show an ordered list of rules, and the number of violations per rule use the `count` subcommand.
+
+This subcommand also highlights rules that can be corrected (marked with a green asterisk) with `swiftlint --fix`
+
+```sh
+$ swiftlint-autodetect count ~/Projects/Demos
+explicit_acl: 2182
+explicit_type_interface: 1669
+identifier_name: 622
+missing_docs: 409
+type_contents_order: 335
+explicit_top_level_acl: 321
+implicit_return (*): 306
+let_var_whitespace: 295
+line_length: 294
+force_unwrapping: 260
+vertical_whitespace_between_cases (*): 167
+nesting: 165
+orphaned_doc_comment: 140
+file_types_order: 140
+indentation_width: 134
+required_deinit: 117
+trailing_comma (*): 106
+todo: 106
+```
+
+
 
 ## How this works
 
