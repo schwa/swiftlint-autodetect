@@ -14,6 +14,8 @@ pipx uninstall swiftlint-autodetect
 
 ## Usage
 
+Casey Liss wrote up a good description of how to use swiftlint-autodetect here: https://www.caseyliss.com/2021/12/29/swiftlint-autodetect
+
 ```sh
 $ swiftlint-autodetect generate ~/Projects/MyProject
 ```
