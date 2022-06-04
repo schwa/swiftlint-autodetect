@@ -39,9 +39,17 @@ class SwiftLint:
                 values = [field.strip() for field in row.split("|")][1:-1]
                 rule = dict(zip(keys, values))
                 self._rules[rule["identifier"]] = rule
+
+            print(len(self._rules))
+            del self._rules["attributes"]
+            print(len(self._rules))
+            exit(0)
+
+
             return self._rules
 
     def generateCompleteConfig(self):
+        exit(0)
         rules = list(self.rules.values())
         config = {
             "only_rules": [
@@ -142,7 +150,6 @@ def generate(path: str):
         .decode("utf8")
         .splitlines()
     )
-
     keys = [field.strip() for field in output[1].split("|")][1:-1]
     rows = output[3:-1]
 
@@ -151,7 +158,12 @@ def generate(path: str):
     for row in rows:
         values = [field.strip() for field in row.split("|")][1:-1]
         rule = dict(zip(keys, values))
+        #print(rule["identifier"])
+        if rule["identifier"] in ["attributes"]:
+            continue
         rules.append(rule)
+
+
 
     config = {
         "only_rules": [
