@@ -1,4 +1,7 @@
 {
     "python.formatting.provider": "black",
-    "python.pythonPath": "/Users/schwa/Library/Caches/pypoetry/virtualenvs/swiftlint-autodetect-7VpCUtgN-py3.9/bin/python"
+    "python.pythonPath": "/Users/schwa/Library/Caches/pypoetry/virtualenvs/swiftlint-autodetect-7VpCUtgN-py3.9/bin/python",
+    "cSpell.words": [
+        "analyzer"
+    ]
 }

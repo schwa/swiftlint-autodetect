@@ -11,6 +11,8 @@ import typer
 import yaml
 from io import StringIO
 
+__version__ = "0.0.1"
+
 app = typer.Typer()
 
 
@@ -69,12 +71,12 @@ class SwiftLint:
         # TODO: analyze currently broken
         # styles = ["lint", "analyze"]
 
-        path = Path(path).expanduser()
+        expanded_path = Path(path).expanduser()
 
         for style in styles:
             args = shlex.split(
-                f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet {path}"
-            )
+                f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet"
+            ) + [expanded_path]
             output = subprocess.run(args, capture_output=True, text=True, cwd="/tmp")
             if output.stderr:
                 echo(output.stderr, err=True)
@@ -82,6 +84,10 @@ class SwiftLint:
 
             # TODO: only performs first style
             return output.stdout
+
+@app.command()
+def version():
+    print(__version__)
 
 
 @app.command()
@@ -183,12 +189,12 @@ def generate(path: str):
     # TODO: analyze currently broken
     # styles = ["lint", "analyze"]
 
-    path = Path(path).expanduser()
+    expanded_path = Path(path).expanduser()
 
     for style in styles:
         args = shlex.split(
-            f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet {path}"
-        )
+            f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet"
+        ) + [expanded_path]
         output = subprocess.run(args, capture_output=True, text=True, cwd="/tmp")
         if output.stderr:
             echo(output.stderr, err=True)
@@ -197,8 +203,9 @@ def generate(path: str):
         lines = output.stdout.splitlines()
         for line in lines:
             match = pattern.match(line.strip())
-            rule = match.groupdict()["rule"]
-            failing_rules.add(rule)
+            if match:
+                rule = match.groupdict()["rule"]
+                failing_rules.add(rule)
 
     for line in Path("/tmp/swiftlint.yml").open().readlines():
         line = line[:-1]
