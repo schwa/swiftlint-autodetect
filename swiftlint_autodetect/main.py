@@ -80,6 +80,7 @@ class SwiftLint:
             # TODO: only performs first style
             return output.stdout
 
+
 @app.command()
 def version():
     print(__version__)
@@ -112,6 +113,7 @@ def count(path: str):
             style(" (*)", fg=typer.colors.GREEN) if rule["correctable"] == "yes" else ""
         )
         echo(f"{key}{correctable}: {value}")
+
 
 @app.command()
 def minimize(path: str, rule: str):
@@ -168,13 +170,12 @@ def generate(path: str):
     for row in rows:
         values = [field.strip() for field in row.split("|")][1:-1]
         rule = dict(zip(keys, values))
-        #print(rule["identifier"])
+        # print(rule["identifier"])
         if rule["identifier"] in ["attributes"]:
             continue
         rules.append(rule)
 
     print(f"Found {len(rules)} rules.", file=sys.stderr)
-
 
     config = {
         "only_rules": [
@@ -195,12 +196,9 @@ def generate(path: str):
     # TODO: analyze currently broken
     # styles = ["lint", "analyze"]
 
-
     for style in styles:
         print(f"Trying style {style}.")
-        args = shlex.split(
-            f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet ."
-        )
+        args = shlex.split(f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet .")
         output = subprocess.run(args, capture_output=True, text=True, cwd=expanded_path)
         if output.stderr:
             echo(output.stderr, err=True)
