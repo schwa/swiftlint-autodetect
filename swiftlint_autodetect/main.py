@@ -10,6 +10,7 @@ import subprocess
 import typer
 import yaml
 from io import StringIO
+import sys
 
 __version__ = "0.0.1"
 
@@ -42,16 +43,11 @@ class SwiftLint:
                 rule = dict(zip(keys, values))
                 self._rules[rule["identifier"]] = rule
 
-            print(len(self._rules))
             del self._rules["attributes"]
-            print(len(self._rules))
-            exit(0)
-
 
             return self._rules
 
-    def generateCompleteConfig(self):
-        exit(0)
+    def generateCompleteConfig(self, path: str):
         rules = list(self.rules.values())
         config = {
             "only_rules": [
@@ -60,6 +56,7 @@ class SwiftLint:
             "analyzer_rules": [
                 rule["identifier"] for rule in rules if rule["analyzer"] == "yes"
             ],
+            "excluded": [f"{path}/.build/*"],
         }
 
         yaml.safe_dump(config, open("/tmp/swiftlint.yml", "w"))
@@ -71,13 +68,11 @@ class SwiftLint:
         # TODO: analyze currently broken
         # styles = ["lint", "analyze"]
 
-        expanded_path = Path(path).expanduser()
-
         for style in styles:
             args = shlex.split(
-                f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet"
-            ) + [expanded_path]
-            output = subprocess.run(args, capture_output=True, text=True, cwd="/tmp")
+                f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet ."
+            )
+            output = subprocess.run(args, capture_output=True, text=True, cwd=path)
             if output.stderr:
                 echo(output.stderr, err=True)
                 exit(-1)  # TODO: use typer errors
@@ -92,8 +87,13 @@ def version():
 
 @app.command()
 def count(path: str):
+    if path is None:
+        path = "."
+    path = Path(path).expanduser()
+    echo(f"Counting SwiftLint violations in '{path}'.", err=True)
+
     swiftlint = SwiftLint()
-    swiftlint.generateCompleteConfig()
+    swiftlint.generateCompleteConfig(path)
     output = swiftlint.lint(path)
     pattern = re.compile(r"^.+:\d+:\d+: (?:warning|error): .+ \((?P<rule>.+)\)$")
 
@@ -112,7 +112,6 @@ def count(path: str):
             style(" (*)", fg=typer.colors.GREEN) if rule["correctable"] == "yes" else ""
         )
         echo(f"{key}{correctable}: {value}")
-
 
 @app.command()
 def minimize(path: str, rule: str):
@@ -149,8 +148,13 @@ def minimize(path: str, rule: str):
 
 @app.command()
 def generate(path: str):
+    if path is None:
+        path = "."
+    expanded_path = Path(path).expanduser()
+
     swiftlint = which("swiftlint")
 
+    print("Getting list of rules.", file=sys.stderr)
     output = (
         subprocess.check_output(shlex.split(f"{swiftlint} rules"), cwd="/tmp")
         .decode("utf8")
@@ -169,6 +173,7 @@ def generate(path: str):
             continue
         rules.append(rule)
 
+    print(f"Found {len(rules)} rules.", file=sys.stderr)
 
 
     config = {
@@ -178,6 +183,7 @@ def generate(path: str):
         "analyzer_rules": [
             rule["identifier"] for rule in rules if rule["analyzer"] == "yes"
         ],
+        "excluded": [f"{expanded_path}/.build"],
     }
 
     yaml.safe_dump(config, open("/tmp/swiftlint.yml", "w"))
@@ -189,13 +195,13 @@ def generate(path: str):
     # TODO: analyze currently broken
     # styles = ["lint", "analyze"]
 
-    expanded_path = Path(path).expanduser()
 
     for style in styles:
+        print(f"Trying style {style}.")
         args = shlex.split(
-            f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet"
-        ) + [expanded_path]
-        output = subprocess.run(args, capture_output=True, text=True, cwd="/tmp")
+            f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet ."
+        )
+        output = subprocess.run(args, capture_output=True, text=True, cwd=expanded_path)
         if output.stderr:
             echo(output.stderr, err=True)
             exit(-1)
