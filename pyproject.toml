@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "swiftlint-autodetect"
-version = "0.1.0"
+version = "0.1.1"
 description = "TODO"
 authors = ["Jonathan Wight <jwight@mac.com>"]
 
