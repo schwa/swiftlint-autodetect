@@ -82,6 +82,14 @@ trailing_comma (*): 106
 todo: 106
 ```
 
+## Configuration
+
+Save a file at `~/.config/swiftlint-autodetect/config.toml`. Currently supported keys are 'always_disabled_rules' to specify rules that always disabled for all projects regardless of violation count, e.g.:
+
+```toml
+always_disabled_rules = ["yoda_condition"]
+```
+
 ## How this works
 
 swiftlint-autodetect queries swiftlint for the full list of rules and creates a temporary swiftlint config file enabling all these rules. It then performs a lint operation on the source code at the path specified and finds out which rules would be violated. It then outputs a configuration disabling the violated rules.

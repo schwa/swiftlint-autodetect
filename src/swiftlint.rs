@@ -13,13 +13,13 @@ use yaml_rust2::{yaml, Yaml, YamlEmitter, YamlLoader};
 
 #[derive(Debug, Deserialize)]
 struct Config {
-    always_disabled_rules: Vec<String>,
+    always_disabled_rules: Option<Vec<String>>,
 }
 
 impl Config {
     fn new() -> Self {
         Config {
-            always_disabled_rules: vec![],
+            always_disabled_rules: None,
         }
     }
 
@@ -341,12 +341,20 @@ impl Swiftlint {
                     line = format!("{} (fixable)", line);
                 }
             }
+            let mut disabled = false;
+            if let Some(always_disabled_rules) = &app_config.always_disabled_rules {
+                if always_disabled_rules.contains(&rule.identifier) {
+                    disabled = true;
+                }
+            }
+            if *count >= minimum_violations && !(ignore_fixable && rule.correctable) {
+                disabled = true
+            }
 
-            if app_config.always_disabled_rules.contains(&rule.identifier) {
-                line = format!("#{}", line);
-            } else if *count >= minimum_violations && !(ignore_fixable && rule.correctable) {
+            if disabled {
                 line = format!("#{}", line);
             }
+
             output.push_str(format!("{}\n", &line).as_str());
         }
 
