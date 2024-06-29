@@ -9,6 +9,8 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use yaml_rust2::{yaml, Yaml, YamlEmitter, YamlLoader};
+use colored_markup::{println_markup, StyleSheet};
+
 
 #[derive(Debug)]
 pub struct Swiftlint {
@@ -213,6 +215,13 @@ impl Swiftlint {
     }
 
     pub fn count(&self) -> Result<()> {
+
+        let style_sheet =
+        StyleSheet::parse("green { foreground: bright-green; styles: underline }
+        red { foreground: bright-red }
+        ").unwrap();
+
+
         let path = self.generate_config().unwrap();
 
         let diagnostics = self.lint(&path).unwrap();
@@ -234,13 +243,23 @@ impl Swiftlint {
 
         diagnostics_by_identifier.sort_by(|a, b| b.1.cmp(&a.1));
 
+        // println_markup!(&style_sheet, "The next word is <red>{}</red>", "red");
+
         for (identifier, count) in diagnostics_by_identifier.iter() {
+            let mut line = String::new();
             let rule = self
                 .rules
                 .iter()
                 .find(|rule| rule.identifier == *identifier)
                 .unwrap();
-            println!("{}: {} ({})", rule.identifier, count, rule.kind);
+
+            line.push_str(format!("{}: <red>{}</red>", rule.identifier, count).as_str());
+            if rule.correctable {
+                line.push_str(" <green>fixable</green>");
+            }
+            line.push_str(format!(" ({})", rule.kind).as_str());
+
+            println_markup!(&style_sheet, "{}", line);
         }
 
         Ok(())
