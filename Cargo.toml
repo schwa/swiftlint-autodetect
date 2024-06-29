@@ -1,0 +1,14 @@
+[package]
+name = "swiftlint-autodetect"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+clap = { version = "4.5.8", features = ["derive"] }
+hashlink = "0.8.4"
+regex = "1.10.5"
+serde = { version = "1.0.203", features = ["derive"] }
+serde_yml = "0.0.10"
+tempfile = "3.10.1"
+yaml-rust2 = "0.8.1"

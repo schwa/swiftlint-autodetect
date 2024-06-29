@@ -5,42 +5,50 @@ Python script to autodetect a base set of swiftlint rules.
 ## Installation
 
 ```sh
-brew install pipx
-pipx install git+https://github.com/schwa/swiftlint-autodetect.git
-
-# to uninstall later
-pipx uninstall swiftlint-autodetect
+cargo install --git https://github.com/schwa/swiftlint-autodetect
 ```
 
 ## Usage
 
-Casey Liss wrote up a good description of how to use swiftlint-autodetect here: https://www.caseyliss.com/2021/12/29/swiftlint-autodetect
+Casey Liss wrote up a good description of how to use swiftlint-autodetect here: <https://www.caseyliss.com/2021/12/29/swiftlint-autodetect>. This write-up is based on the previous Python version of the tool, but the usage is similar.
 
 ```sh
-$ swiftlint-autodetect generate ~/Projects/MyProject
+# Count the number of violations of _all_ SwiftLint rules in the given directory
+$ swiftlint-autodetect count
+# Output a SwiftLint configuration that disables all rules that are violated in the given directory.
+$ swiftlint-autodetect generate --count
+# Save a SwiftLint configuration that disables all rules that are violated in the given directory.
+$ swiftlint-autodetect generate --count --output .swiftlint.yml
 ```
 
-And this outputs:
+## Help
 
-```yaml
-analyzer_rules:
-- capture_variable
-- explicit_self
-- unused_declaration
-- unused_import
-only_rules:
-# - anonymous_argument_in_multiline_closure
-- anyobject_protocol
-# - array_init
+```plaintext
+$ swiftlint-autodetect generate --help
+Generate a SwiftLint configuration, by disabling rules with a minimum number of violations
 
-# and so on
+Usage: swiftlint-autodetect generate [OPTIONS] [PATH]
+
+Arguments:
+  [PATH]  Path to the project [default: .]
+
+Options:
+  -c, --counts
+          Include violation counts in the generated configuration
+  -o, --output <OUTPUT>
+          Output path for the generated configuration
+  -m, --minimum-violations <MINIMUM_VIOLATIONS>
+          Minimum number of violations required to disable a rule [default: 1]
+  -h, --help
+          Print help
 ```
+
 
 ## Counting Violations
 
 To show an ordered list of rules, and the number of violations per rule use the `count` subcommand.
 
-This subcommand also highlights rules that can be corrected (marked with an asterisk) with `swiftlint --fix`
+~~This subcommand also highlights rules that can be corrected (marked with an asterisk) with `swiftlint --fix`~~
 
 ```sh
 $ swiftlint-autodetect count ~/Projects/Demos
@@ -64,19 +72,6 @@ trailing_comma (*): 106
 todo: 106
 ```
 
-## Getting minimum values for count based rules
-
-You can also use swiftlint-autodetect to compute the minimum count of a count based rule like: line_length, file_length,
-cyclomatic_complexity.
-
-```sh
-$ swiftlint-autodetect minimize ~/Projects/Demos function_body_length
-function_body_length:
-  error: 79
-  warning: 79
-only_rules:
-- function_body_length
-```
 ## How this works
 
 swiftlint-autodetect queries swiftlint for the full list of rules and creates a temporary swiftlint config file enabling all these rules. It then performs a lint operation on the source code at the path specified and finds out which rules would be violated. It then outputs a configuration disabling the violated rules.
