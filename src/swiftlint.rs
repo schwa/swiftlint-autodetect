@@ -310,9 +310,9 @@ impl Swiftlint {
                 if *count != 0 {
                     line = format!("{} # {} violations", line, count);
                 }
-                if *count >= minimum_violations {
-                    line = format!("#{}", line);
-                }
+            }
+            if *count >= minimum_violations {
+                line = format!("#{}", line);
             }
             output.push_str(format!("{}\n", &line).as_str());
         }
