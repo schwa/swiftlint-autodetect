@@ -1,13 +1,12 @@
 use anyhow::Result;
 use colored_markup::{println_markup, StyleSheet};
+use hashlink::LinkedHashMap;
 use regex::Regex;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::fs;
-use std::fs::canonicalize;
 use std::io::Write;
-use std::path::Path;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use yaml_rust2::{yaml, Yaml, YamlEmitter, YamlLoader};
 
@@ -162,7 +161,7 @@ impl Swiftlint {
     }
 
     pub fn generate_config(&self) -> Result<PathBuf> {
-        let dotbuild = canonicalize(&self.working_directory)?.join(".build/*");
+        let dotbuild = fs::canonicalize(&self.working_directory)?.join(".build/*");
 
         let exclusions: Vec<&str> = vec![dotbuild.to_str().unwrap()];
 
@@ -306,7 +305,6 @@ impl Swiftlint {
             let count = diagnostics_by_identifier
                 .get(&rule.identifier)
                 .unwrap_or(&0);
-
             let mut line = format!("  - {}", rule.identifier);
             if include_counts {
                 if *count != 0 {
@@ -316,7 +314,6 @@ impl Swiftlint {
                     line = format!("#{}", line);
                 }
             }
-
             output.push_str(format!("{}\n", &line).as_str());
         }
 
@@ -331,8 +328,6 @@ impl Swiftlint {
         Ok(())
     }
 }
-
-use hashlink::LinkedHashMap;
 
 #[allow(dead_code)]
 pub fn modify_yaml(path: &Path, keys_to_strip: Vec<&str>) -> Result<String> {

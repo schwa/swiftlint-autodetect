@@ -43,12 +43,11 @@ Options:
           Print help
 ```
 
-
 ## Counting Violations
 
 To show an ordered list of rules, and the number of violations per rule use the `count` subcommand.
 
-~~This subcommand also highlights rules that can be corrected (marked with an asterisk) with `swiftlint --fix`~~
+This subcommand also highlights rules that can be corrected with `swiftlint --fix`
 
 ```sh
 $ swiftlint-autodetect count ~/Projects/Demos
