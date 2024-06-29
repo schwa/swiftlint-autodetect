@@ -2,13 +2,39 @@ use anyhow::Result;
 use colored_markup::{println_markup, StyleSheet};
 use hashlink::LinkedHashMap;
 use regex::Regex;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use shellexpand;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use yaml_rust2::{yaml, Yaml, YamlEmitter, YamlLoader};
+
+#[derive(Debug, Deserialize)]
+struct Config {
+    always_disabled_rules: Vec<String>,
+}
+
+impl Config {
+    fn new() -> Self {
+        Config {
+            always_disabled_rules: vec![],
+        }
+    }
+
+    fn load() -> Result<Self> {
+        let path = "~/.config/swiftlint-autodetect/config.toml";
+        let path = shellexpand::tilde(path).into_owned();
+        // if path exists
+        if Path::new(&path).exists() {
+            let contents = fs::read_to_string(&path)?;
+            let config: Config = toml::from_str(&contents)?;
+            return Ok(config);
+        }
+        Ok(Config::new())
+    }
+}
 
 #[derive(Debug)]
 pub struct Swiftlint {
@@ -29,7 +55,7 @@ pub struct Rule {
 }
 
 #[derive(Debug, Serialize)]
-pub struct Config {
+pub struct SwiftLintConfig {
     pub disabled_rules: Vec<String>,
     pub excluded: Vec<String>,
     pub opt_in_rules: Vec<String>,
@@ -173,7 +199,7 @@ impl Swiftlint {
             .filter(|rule| !rule.analyzer)
             .collect::<Vec<&Rule>>();
 
-        let config = Config {
+        let config = SwiftLintConfig {
             disabled_rules: vec![],
             excluded: exclusions
                 .iter()
@@ -277,6 +303,8 @@ impl Swiftlint {
         minimum_violations: u32,
         ignore_fixable: bool,
     ) -> Result<()> {
+        let app_config = Config::load()?;
+
         let path = self.generate_config()?;
 
         let diagnostics = self.lint(&path)?;
@@ -295,7 +323,6 @@ impl Swiftlint {
             // if output path exists
             if output_path.exists() {
                 // modify the yaml
-
                 let modified_yaml = modify_yaml(output_path, vec!["disabled_rules", "only_rules"])?;
                 output.push_str(&modified_yaml);
                 output.push('\n');
@@ -314,7 +341,10 @@ impl Swiftlint {
                     line = format!("{} (fixable)", line);
                 }
             }
-            if *count >= minimum_violations && !(ignore_fixable && rule.correctable) {
+
+            if app_config.always_disabled_rules.contains(&rule.identifier) {
+                line = format!("#{}", line);
+            } else if *count >= minimum_violations && !(ignore_fixable && rule.correctable) {
                 line = format!("#{}", line);
             }
             output.push_str(format!("{}\n", &line).as_str());

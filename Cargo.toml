@@ -13,5 +13,7 @@ hashlink = "0.8.4"
 regex = "1.10.5"
 serde = { version = "1.0.203", features = ["derive"] }
 serde_yml = "0.0.10"
+shellexpand = "3.1.0"
 tempfile = "3.10.1"
+toml = "0.8.14"
 yaml-rust2 = "0.8.1"
