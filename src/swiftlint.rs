@@ -39,16 +39,17 @@ pub struct Config {
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct Diagnostic {
-    pub path: PathBuf,
+    pub file: PathBuf,
     pub line: u32,
-    pub column: u32,
-    pub level: String,
-    pub message: String,
-    pub identifier: String,
+    pub character: u32,
+    pub severity: String, // TODO: Make into an enu,
+    pub reason: String,
+    pub rule_id: String,
 }
 
 impl From<&str> for Diagnostic {
     fn from(line: &str) -> Self {
+        // TODO: use --reporter=json instead.
         let pattern = Regex::new(r"^(?<path>.+):(?<line>\d+):(?<column>\d+): (?<level>warning|error): (?<description>.+) \((?<identifier>.+)\)$").unwrap();
         let captures = pattern.captures(line).unwrap();
         let path = PathBuf::from(captures.name("path").unwrap().as_str());
@@ -68,12 +69,12 @@ impl From<&str> for Diagnostic {
         let message = captures.name("description").unwrap().as_str().to_string();
         let identifier = captures.name("identifier").unwrap().as_str().to_string();
         Diagnostic {
-            path,
+            file: path,
             line,
-            column,
-            level,
-            message,
-            identifier,
+            character: column,
+            severity: level,
+            reason: message,
+            rule_id: identifier,
         }
     }
 }
@@ -230,7 +231,7 @@ impl Swiftlint {
         let mut diagnostics_by_identifier: HashMap<String, u32> = HashMap::new();
         for diagnostic in diagnostics.iter() {
             let count = diagnostics_by_identifier
-                .entry(diagnostic.identifier.clone())
+                .entry(diagnostic.rule_id.clone())
                 .or_insert(0);
             *count += 1;
         }
@@ -282,7 +283,7 @@ impl Swiftlint {
         let mut diagnostics_by_identifier: HashMap<String, u32> = HashMap::new();
         for diagnostic in diagnostics.iter() {
             let count = diagnostics_by_identifier
-                .entry(diagnostic.identifier.clone())
+                .entry(diagnostic.rule_id.clone())
                 .or_insert(0);
             *count += 1;
         }
