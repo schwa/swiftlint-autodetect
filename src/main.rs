@@ -37,6 +37,10 @@ enum Commands {
         /// Minimum number of violations required to disable a rule.
         #[clap(long, short, default_value = "1")]
         minimum_violations: u32,
+
+        /// Don't disable fixable rules.
+        #[clap(long, short)]
+        ignore_fixable: bool,
     },
 }
 
@@ -53,9 +57,10 @@ fn main() -> Result<()> {
             include_counts,
             output,
             minimum_violations,
+            ignore_fixable,
         }) => {
             let swiftlint = Swiftlint::new(path)?;
-            swiftlint.generate(output, include_counts, minimum_violations)?;
+            swiftlint.generate(output, include_counts, minimum_violations, ignore_fixable)?;
         }
         None => {
             println!("No command provided");

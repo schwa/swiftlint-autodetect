@@ -274,6 +274,7 @@ impl Swiftlint {
         output_path: Option<PathBuf>,
         include_counts: bool,
         minimum_violations: u32,
+        ignore_fixable: bool,
     ) -> Result<()> {
         let path = self.generate_config()?;
 
@@ -309,9 +310,12 @@ impl Swiftlint {
             if include_counts {
                 if *count != 0 {
                     line = format!("{} # {} violations", line, count);
+                    if rule.correctable {
+                        line = format!("{} (fixable)", line);
+                    }
                 }
             }
-            if *count >= minimum_violations {
+            if *count >= minimum_violations && !(ignore_fixable && rule.correctable) {
                 line = format!("#{}", line);
             }
             output.push_str(format!("{}\n", &line).as_str());

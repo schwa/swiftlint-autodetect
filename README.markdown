@@ -39,6 +39,8 @@ Options:
           Output path for the generated configuration
   -m, --minimum-violations <MINIMUM_VIOLATIONS>
           Minimum number of violations required to disable a rule [default: 1]
+  -i, --ignore-fixable
+          Don't disable fixable rules
   -h, --help
           Print help
 ```
