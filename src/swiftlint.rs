@@ -307,12 +307,10 @@ impl Swiftlint {
                 .get(&rule.identifier)
                 .unwrap_or(&0);
             let mut line = format!("  - {}", rule.identifier);
-            if include_counts {
-                if *count != 0 {
-                    line = format!("{} # {} violations", line, count);
-                    if rule.correctable {
-                        line = format!("{} (fixable)", line);
-                    }
+            if include_counts && *count != 0 {
+                line = format!("{} # {} violations", line, count);
+                if rule.correctable {
+                    line = format!("{} (fixable)", line);
                 }
             }
             if *count >= minimum_violations && !(ignore_fixable && rule.correctable) {
