@@ -156,7 +156,6 @@ def generate(path: str):
 
     swiftlint = which("swiftlint")
 
-    print("Getting list of rules.", file=sys.stderr)
     output = (
         subprocess.check_output(shlex.split(f"{swiftlint} rules"), cwd="/tmp")
         .decode("utf8")
@@ -174,8 +173,6 @@ def generate(path: str):
         if rule["identifier"] in ["attributes"]:
             continue
         rules.append(rule)
-
-    print(f"Found {len(rules)} rules.", file=sys.stderr)
 
     config = {
         "only_rules": [
@@ -197,7 +194,6 @@ def generate(path: str):
     # styles = ["lint", "analyze"]
 
     for style in styles:
-        print(f"Trying style {style}.")
         args = shlex.split(f"{swiftlint} {style} --config /tmp/swiftlint.yml --quiet .")
         output = subprocess.run(args, capture_output=True, text=True, cwd=expanded_path)
         if output.stderr:
