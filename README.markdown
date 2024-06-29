@@ -4,6 +4,15 @@ Python script to autodetect a base set of swiftlint rules.
 
 ## Installation
 
+Via homebrew:
+
+```sh
+brew tap schwa/schwa
+brew install swiftlint-autodetect
+```
+
+Or directly via cargo:
+
 ```sh
 cargo install --git https://github.com/schwa/swiftlint-autodetect
 ```
