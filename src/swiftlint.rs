@@ -3,7 +3,6 @@ use colored_markup::{println_markup, StyleSheet};
 use hashlink::LinkedHashMap;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use shellexpand;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Write;
