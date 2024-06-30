@@ -4,6 +4,8 @@ version = "0.1.3"
 edition = "2021"
 license = "MIT"
 description = "Automatically generate Swiftlint rules from your codebase."
+url = "https://github.com/schwa/swiftlint-autodetect"
+repository = "https://github.com/schwa/swiftlint-autodetect"
 
 [dependencies]
 anyhow = "1.0.86"
