@@ -1,6 +1,6 @@
 # swiftlint-autodetect
 
-Python script to autodetect a base set of swiftlint rules.
+Rust-based tool to autodetect a base set of swiftlint rules.
 
 ## Installation
 
