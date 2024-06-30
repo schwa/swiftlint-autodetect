@@ -17,6 +17,8 @@ Or directly via cargo:
 cargo install --git https://github.com/schwa/swiftlint-autodetect
 ```
 
+To run `swiftlint-autodetect`, [swiftlint](https://github.com/realm/SwiftLint) must be installed and on your path.
+
 ## Usage
 
 Casey Liss wrote up a good description of how to use swiftlint-autodetect here: <https://www.caseyliss.com/2021/12/29/swiftlint-autodetect>. This write-up is based on the previous Python version of the tool, but the usage is similar.
