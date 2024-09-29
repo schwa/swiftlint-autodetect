@@ -77,3 +77,6 @@ test-homebrew:
     brew tap schwa/schwa
     brew update
     brew install swiftlint-autodetect
+
+test-everything:
+    cargo run -- generate ~/Projects/Everything

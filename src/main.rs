@@ -1,6 +1,8 @@
 use anyhow::Result;
 use clap::Parser;
 use clap::Subcommand;
+use std;
+use std::path;
 use std::path::PathBuf;
 
 mod swiftlint;
@@ -49,6 +51,7 @@ fn main() -> Result<()> {
 
     match cli.command {
         Some(Commands::Count { path }) => {
+            let path: PathBuf = path::absolute(path)?;
             let swiftlint = Swiftlint::new(path)?;
             swiftlint.count()?;
         }
@@ -59,6 +62,7 @@ fn main() -> Result<()> {
             minimum_violations,
             ignore_fixable,
         }) => {
+            let path: PathBuf = path::absolute(path)?;
             let swiftlint = Swiftlint::new(path)?;
             swiftlint.generate(output, include_counts, minimum_violations, ignore_fixable)?;
         }
