@@ -208,7 +208,7 @@ impl Swiftlint {
             only_rules: vec![],
         };
 
-        let yaml = serde_yml::to_string(&config)?;
+        let yaml = serde_norway::to_string(&config)?;
 
         let path = PathBuf::from("/tmp/swiftlint.yml");
         let mut file = std::fs::File::create(&path)?;

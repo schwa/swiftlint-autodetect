@@ -8,14 +8,14 @@ url = "https://github.com/schwa/swiftlint-autodetect"
 repository = "https://github.com/schwa/swiftlint-autodetect"
 
 [dependencies]
-anyhow = "1.0.86"
-clap = { version = "4.5.8", features = ["derive"] }
+anyhow = "1.0.100"
+clap = { version = "4.5.53", features = ["derive"] }
 colored_markup = "0.1.1"
 hashlink = "0.8.4"
-regex = "1.10.5"
-serde = { version = "1.0.203", features = ["derive"] }
-serde_yml = "0.0.10"
-shellexpand = "3.1.0"
-tempfile = "3.10.1"
-toml = "0.8.14"
+regex = "1.12.2"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_norway = "0.9.42"
+shellexpand = "3.1.1"
+tempfile = "3.23.0"
+toml = "0.8.23"
 yaml-rust2 = "0.8.1"
