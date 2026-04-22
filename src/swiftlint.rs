@@ -1,5 +1,5 @@
 use anyhow::Result;
-use colored_markup::{println_markup, StyleSheet};
+use owo_colors::OwoColorize;
 use hashlink::LinkedHashMap;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -239,15 +239,6 @@ impl Swiftlint {
     }
 
     pub fn count(&self) -> Result<()> {
-        let style_sheet = StyleSheet::parse(
-            "
-        fixable { foreground: bright-green; styles: underline }
-        warning { foreground: bright-yellow }
-        bad { foreground: bright-red }
-        ",
-        )
-        .unwrap();
-
         let path = self.generate_config().unwrap();
 
         let diagnostics = self.lint(&path).unwrap();
@@ -278,18 +269,16 @@ impl Swiftlint {
                 .unwrap();
 
             if *count >= 10 {
-                line.push_str(format!("{}: <bad>{}</bad>", rule.identifier, count).as_str());
+                line.push_str(&format!("{}: {}", rule.identifier, count.bright_red()));
             } else {
-                line.push_str(
-                    format!("{}: <warning>{}</warning>", rule.identifier, count).as_str(),
-                );
+                line.push_str(&format!("{}: {}", rule.identifier, count.bright_yellow()));
             }
             if rule.correctable {
-                line.push_str(" <fixable>fixable</fixable>");
+                line.push_str(&format!(" {}", "fixable".bright_green().underline()));
             }
-            line.push_str(format!(" ({})", rule.kind).as_str());
+            line.push_str(&format!(" ({})", rule.kind));
 
-            println_markup!(&style_sheet, "{}", line);
+            println!("{}", line);
         }
 
         Ok(())

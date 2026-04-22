@@ -10,7 +10,7 @@ repository = "https://github.com/schwa/swiftlint-autodetect"
 [dependencies]
 anyhow = "1.0.100"
 clap = { version = "4.5.53", features = ["derive"] }
-colored_markup = "0.1.1"
+owo-colors = "4.3.0"
 hashlink = "0.8.4"
 regex = "1.12.2"
 serde = { version = "1.0.228", features = ["derive"] }
